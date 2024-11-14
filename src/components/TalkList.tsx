@@ -1,26 +1,34 @@
 import { Fragment } from 'react';
 import { useVideos } from '../hooks/useVideos';
 import type { Video } from '../types/talk';
+import { useWindowSize } from '../hooks/useWindowSize';
+
 
 interface TalkCardProps {
   video: Video;
 }
 
 function TalkCard({ video }: TalkCardProps) {
+  const { width, height } = useWindowSize();
+
+  console.log(video.primaryImageSet);
+  
   return (
-    <article className="p-4 border rounded shadow hover:shadow-md transition-shadow">
-      <img
-        src={video.primaryImageSet.url}
-        alt={video.title}
-        className="w-full h-48 object-cover rounded"
-        loading="lazy"
-      />
-      <h3 className="text-lg font-bold mt-2">{video.title}</h3>
-      <p className="text-sm text-gray-600">{video.presenterDisplayName}</p>
-      <div className="mt-2 text-sm text-gray-500">
-        {Math.floor(video.duration / 60)} minutes • {new Intl.NumberFormat().format(video.viewedCount)} views
-      </div>
-    </article>
+    <div style={{ width, height, backgroundColor: `hsl(${Math.random() * 360}, 70%, 80%)` }} >
+      <article className="p-4 border rounded shadow hover:shadow-md transition-shadow h-full">
+        <img
+          src={video.primaryImageSet.url}
+          alt={video.title}
+          className="w-full h-48 object-cover rounded"
+          loading="lazy"
+        />
+        <h3 className="text-lg font-bold mt-2">{video.title}</h3>
+        <p className="text-sm text-gray-600">{video.presenterDisplayName}</p>
+        <div className="mt-2 text-sm text-gray-500">
+          {Math.floor(video.duration / 60)} minutes • {new Intl.NumberFormat().format(video.viewedCount)} views
+        </div>
+      </article>
+    </div>
   );
 }
 
