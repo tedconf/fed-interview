@@ -1,16 +1,13 @@
-import { Fragment } from 'react';
+import { Fragment, useEffect, useState } from 'react';
 import { useVideos } from '../hooks/useVideos';
 import type { Video } from '../types/talk';
 import { useWindowSize } from '../hooks/useWindowSize';
 import { Swiper, SwiperSlide } from 'swiper/react';
-import { EffectFade } from 'swiper/modules';
-import { Autoplay } from 'swiper/modules';
-// import { EffectFade } from 'swiper/modules';
+import { EffectFade, Autoplay } from 'swiper/modules';
 
 import 'swiper/css';
 import 'swiper/css/autoplay';
 import 'swiper/css/effect-fade';
-
 
 interface TalkCardProps {
   video: Video;
@@ -18,53 +15,95 @@ interface TalkCardProps {
 
 function TalkCard({ video }: TalkCardProps) {
   const { width, height } = useWindowSize();
-  
-  // Find best matching image based on aspect ratio
+  const [cachedImage, setCachedImage] = useState<string | null>(null);
+
+  // Function to get the best matching image based on aspect ratio
   const getBestMatchingImage = () => {
     const ratioMap = {
-      '16x9': 16/9,
-      '4x3': 4/3,
-      '2x1': 2/1
+      '16x9': 16 / 9,
+      '4x3': 4 / 3,
+      '2x1': 2 / 1,
     };
-    
+
     if (Array.isArray(video.primaryImageSet)) {
       return video.primaryImageSet.reduce((best, current) => {
         const currentRatio = ratioMap[current.aspectRatioName as keyof typeof ratioMap];
         const bestRatio = ratioMap[best.aspectRatioName as keyof typeof ratioMap];
-        
-        return Math.abs(currentRatio - width / height) < Math.abs(bestRatio - width / height) 
-          ? current 
+
+        return Math.abs(currentRatio - width / height) < Math.abs(bestRatio - width / height)
+          ? current
           : best;
       });
     }
-    
+
     return video.primaryImageSet;
   };
 
   const backgroundImage = getBestMatchingImage();
-  
+
+  // Function to fetch and cache image
+  const fetchAndCacheImage = async (url: string) => {
+    try {
+      const cached = localStorage.getItem(url);
+      if (cached) {
+        return cached;
+      } else {
+        const response = await fetch(url);
+        const blob = await response.blob();
+        return new Promise<string>((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onloadend = () => {
+            const base64data = reader.result as string;
+            try {
+              localStorage.setItem(url, base64data);
+            } catch (e) {
+              console.warn('LocalStorage is full, unable to cache image:', e);
+            }
+            resolve(base64data);
+          };
+          reader.onerror = reject;
+          reader.readAsDataURL(blob);
+        });
+      }
+    } catch (error) {
+      console.error('Error fetching image:', error);
+      return url; // Fallback to original URL
+    }
+  };
+
+  useEffect(() => {
+    let isMounted = true;
+
+    fetchAndCacheImage(backgroundImage.url).then((data) => {
+      if (isMounted) {
+        setCachedImage(data);
+      }
+    });
+
+    return () => {
+      isMounted = false;
+    };
+  }, [backgroundImage.url]);
+
   return (
-    <div 
-      style={{ 
-        backgroundImage: `url(${backgroundImage.url})`,
+    <div
+      style={{
+        backgroundImage: `url(${cachedImage || backgroundImage.url})`,
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         width: `${width}px`,
         height: `${height}px`,
-      }} 
-      className="fixed inset-0"
+      }}
+      className="relative"
     >
-      <article className="v-full h-full overflow-auto bg-white/80 backdrop-blur-sm">
-        {/* <img
-          src={video.primaryImageSet.url}
-          alt={video.title}
-          className="w-full h-48 object-cover rounded"
-          loading="lazy"
-        /> */}
-        <h3 style={{marginTop: "0px"}} className="h-full text-bottom">{video.title}</h3>
+      <article className="h-screen bottom-0 left-0 overflow-auto bg-white/80 backdrop-blur-sm">
+        <h3 style={{ marginTop: '0px' }} className="h-screen text-bottom">
+          {video.title}
+        </h3>
         <p className="">{video.presenterDisplayName}</p>
         <div className="">
-          {Math.floor(video.duration / 60)} minutes • {new Intl.NumberFormat().format(video.viewedCount)} views
+          {Math.floor(video.duration / 60)} minutes •{' '}
+          {new Intl.NumberFormat().format(video.viewedCount)} views
         </div>
       </article>
     </div>
@@ -77,11 +116,7 @@ interface TalkListProps {
 }
 
 export function TalkList({ searchQuery, topicFilter }: TalkListProps) {
-  const {
-    data,
-    isLoading,
-    error
-  } = useVideos({
+  const { data, isLoading, error } = useVideos({
     searchQuery,
     topicFilter,
   });
@@ -109,11 +144,10 @@ export function TalkList({ searchQuery, topicFilter }: TalkListProps) {
       <Swiper
         modules={[Autoplay, EffectFade]}
         spaceBetween={0}
-        slidesPerView={"auto"}
-        effect="fade"
+        slidesPerView={'auto'}
         autoplay={{
           delay: 3000,
-          disableOnInteraction: false,
+          disableOnInteraction: true,
         }}
       >
         {data?.pages.map((page, i) => (
@@ -126,16 +160,6 @@ export function TalkList({ searchQuery, topicFilter }: TalkListProps) {
           </Fragment>
         ))}
       </Swiper>
-
-      {/* {hasNextPage && (
-        <button
-          onClick={() => fetchNextPage()}
-          disabled={isFetchingNextPage}
-          className="mt-4 px-4 py-2 bg-blue-500 text-white rounded disabled:opacity-50"
-        >
-          {isFetchingNextPage ? 'Loading more...' : 'Load more'}
-        </button>
-      )} */}
     </div>
   );
 }
