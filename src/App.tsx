@@ -2,7 +2,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useState, useEffect } from 'react';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { TalkFilters } from './components/TalkFilters';
-import { useWindowSize } from './hooks/useWindowSize';
+// import { useWindowSize } from './hooks/useWindowSize';
 import { TalkList } from './components/TalkList';
 
 const queryClient = new QueryClient({
@@ -21,7 +21,7 @@ export default function App() {
   const [showFilters, setShowFilters] = useState(true);
 
   // Use the custom hook to get window size
-  const { width, height } = useWindowSize();
+  // const { width, height } = useWindowSize();
 
   useEffect(() => {
     const handleKeyPress = (event: KeyboardEvent) => {
