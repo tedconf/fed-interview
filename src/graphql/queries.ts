@@ -14,6 +14,7 @@ export const TRANSLATION_VIDEO_FRAGMENT = gql`
         timecode
         title
         category
+        viewedCount
       }
     }
   }
@@ -42,6 +43,7 @@ export const VIDEO_FRAGMENT = gql`
   fragment VideoInfo on Video {
     id
     title
+    viewedCount
     slug
     presenterDisplayName
     publishedAt

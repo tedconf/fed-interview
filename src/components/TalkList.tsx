@@ -114,8 +114,14 @@ function TalkCard({ video }: TalkCardProps) {
         </h3>
         <p style={{ marginTop: '0px', position: "absolute", bottom: "6em", left: "5em", fontSize: "2em"}}>{video.presenterDisplayName}</p>
       </article>
-      <div style={{ position: "absolute", bottom: "2em", left: "2em", fontSize: "2em"}}>
-        {/* {new Intl.NumberFormat().format(video.viewedCount)} views */}
+      <div style={{ position: "absolute", bottom: "7em", left: "6.5em", paddingLeft: "8px", fontSize: "1.5em"}}>
+        {video.viewedCount < 10000 ? null : (
+          video.viewedCount < 1000000 ? (
+            `${Math.floor(video.viewedCount / 1000)}K views`
+          ) : (
+            `${(video.viewedCount / 1000000).toFixed(1)}M views`
+          )
+        )}
       </div>
 
     </div>
