@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { TalkFilters } from './components/TalkFilters';
 import { TalkList } from './components/TalkList';
+import { useWindowSize } from './hooks/useWindowSize';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -18,6 +19,9 @@ export default function App() {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedTopic, setSelectedTopic] = useState('');
 
+  // Use the custom hook to get window size
+  const { width, height } = useWindowSize();
+
   return (
     <QueryClientProvider client={queryClient}>
       <ErrorBoundary>
@@ -27,6 +31,9 @@ export default function App() {
               <h1 className="text-3xl font-bold text-gray-900">
                 TED Talks
               </h1>
+              <p className="text-sm text-gray-500">
+                Window size: {width} x {height}
+              </p>
             </div>
           </header>
 

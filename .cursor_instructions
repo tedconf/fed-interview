@@ -1,0 +1,4 @@
+use typescript
+don't use .FC for components, use functional components
+consider performance and error handling
+describe pros and cons of suggested changes
