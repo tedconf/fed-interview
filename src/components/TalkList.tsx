@@ -85,6 +85,7 @@ function TalkCard({ video }: TalkCardProps) {
     };
   }, [backgroundImage.url]);
 
+  console.log(video);
   return (
     <div
       style={{
@@ -96,7 +97,7 @@ function TalkCard({ video }: TalkCardProps) {
       }}
       className="relative"
     >
-      <article className="h-screen bottom-0 left-0 overflow-auto bg-white/80 backdrop-blur-sm">
+      {/* <article className="h-screen bottom-0 left-0 overflow-auto bg-white/80 backdrop-blur-sm">
         <h3 style={{ marginTop: '0px' }} className="h-screen text-bottom">
           {video.title}
         </h3>
@@ -105,7 +106,18 @@ function TalkCard({ video }: TalkCardProps) {
           {Math.floor(video.duration / 60)} minutes •{' '}
           {new Intl.NumberFormat().format(video.viewedCount)} views
         </div>
+      </article> */}
+
+      <article className="w-full h-full" style={{ height: "100%"}}>
+        <h3 style={{ marginTop: '0px', position: "absolute", bottom: "3em", left: "2em", fontSize: "5em"}} className="">
+          {video.title}
+        </h3>
+        <p style={{ marginTop: '0px', position: "absolute", bottom: "6em", left: "5em", fontSize: "2em"}}>{video.presenterDisplayName}</p>
       </article>
+      <div style={{ position: "absolute", bottom: "2em", left: "2em", fontSize: "2em"}}>
+        {/* {new Intl.NumberFormat().format(video.viewedCount)} views */}
+      </div>
+
     </div>
   );
 }
