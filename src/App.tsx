@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { TalkFilters } from './components/TalkFilters';
 import { TalkList } from './components/TalkList';
@@ -18,9 +18,26 @@ const queryClient = new QueryClient({
 export default function App() {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedTopic, setSelectedTopic] = useState('');
+  const [showFilters, setShowFilters] = useState(true);
 
   // Use the custom hook to get window size
   const { width, height } = useWindowSize();
+
+  useEffect(() => {
+    const handleKeyPress = (event: KeyboardEvent) => {
+      if (
+        event.key.toLowerCase() === 't' && 
+        !event.ctrlKey && 
+        !event.altKey && 
+        !(event.target instanceof HTMLInputElement || event.target instanceof HTMLTextAreaElement)
+      ) {
+        setShowFilters(prev => !prev);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyPress);
+    return () => window.removeEventListener('keydown', handleKeyPress);
+  }, []);
 
   return (
     <QueryClientProvider client={queryClient}>
@@ -38,11 +55,13 @@ export default function App() {
           </header>
 
           <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-            <TalkFilters
-              onSearch={setSearchQuery}
-              onTopicChange={setSelectedTopic}
-              selectedTopic={selectedTopic}
-            />
+            {showFilters && (
+              <TalkFilters
+                onSearch={setSearchQuery}
+                onTopicChange={setSelectedTopic}
+                selectedTopic={selectedTopic}
+              />
+            )}
             <TalkList
               searchQuery={searchQuery}
               topicFilter={selectedTopic}
