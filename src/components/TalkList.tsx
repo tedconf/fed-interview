@@ -1,26 +1,127 @@
-import { Fragment } from 'react';
+import { Fragment, useEffect, useState } from 'react';
 import { useVideos } from '../hooks/useVideos';
 import type { Video } from '../types/talk';
+import { useWindowSize } from '../hooks/useWindowSize';
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { EffectFade, Autoplay } from 'swiper/modules';
+
+import 'swiper/css';
+import 'swiper/css/autoplay';
+import 'swiper/css/effect-fade';
 
 interface TalkCardProps {
   video: Video;
 }
 
 function TalkCard({ video }: TalkCardProps) {
+  const { width, height } = useWindowSize();
+  const [cachedImage, setCachedImage] = useState<string | null>(null);
+
+  // Function to get the best matching image based on aspect ratio
+  const getBestMatchingImage = () => {
+    const ratioMap = {
+      '16x9': 16 / 9,
+      '4x3': 4 / 3,
+      '2x1': 2 / 1,
+    };
+
+    if (Array.isArray(video.primaryImageSet)) {
+      return video.primaryImageSet.reduce((best, current) => {
+        const currentRatio = ratioMap[current.aspectRatioName as keyof typeof ratioMap];
+        const bestRatio = ratioMap[best.aspectRatioName as keyof typeof ratioMap];
+
+        return Math.abs(currentRatio - width / height) < Math.abs(bestRatio - width / height)
+          ? current
+          : best;
+      });
+    }
+
+    return video.primaryImageSet;
+  };
+
+  const backgroundImage = getBestMatchingImage();
+
+  // Function to fetch and cache image
+  const fetchAndCacheImage = async (url: string) => {
+    try {
+      const cached = localStorage.getItem(url);
+      if (cached) {
+        return cached;
+      } else {
+        const response = await fetch(url);
+        const blob = await response.blob();
+        return new Promise<string>((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onloadend = () => {
+            const base64data = reader.result as string;
+            try {
+              localStorage.setItem(url, base64data);
+            } catch (e) {
+              console.warn('LocalStorage is full, unable to cache image:', e);
+            }
+            resolve(base64data);
+          };
+          reader.onerror = reject;
+          reader.readAsDataURL(blob);
+        });
+      }
+    } catch (error) {
+      console.error('Error fetching image:', error);
+      return url; // Fallback to original URL
+    }
+  };
+
+  useEffect(() => {
+    let isMounted = true;
+
+    fetchAndCacheImage(backgroundImage.url).then((data) => {
+      if (isMounted) {
+        setCachedImage(data);
+      }
+    });
+
+    return () => {
+      isMounted = false;
+    };
+  }, [backgroundImage.url]);
+
+  console.log(video);
   return (
-    <article className="p-4 border rounded shadow hover:shadow-md transition-shadow">
-      <img
-        src={video.primaryImageSet.url}
-        alt={video.title}
-        className="w-full h-48 object-cover rounded"
-        loading="lazy"
-      />
-      <h3 className="text-lg font-bold mt-2">{video.title}</h3>
-      <p className="text-sm text-gray-600">{video.presenterDisplayName}</p>
-      <div className="mt-2 text-sm text-gray-500">
-        {Math.floor(video.duration / 60)} minutes • {new Intl.NumberFormat().format(video.viewedCount)} views
+    <div
+      style={{
+        backgroundImage: `linear-gradient(rgba(255, 0, 0, 0.5), rgba(128, 128, 128, 0.5)), url(${cachedImage || backgroundImage.url})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        width: `${width}px`,
+        height: `${height}px`,
+        position: 'relative',
+      }}
+      className="flex"
+    >
+      <div className="flex">
+        <article className="flex w-full h-full relative bg-blue-500">
+          <div className="absolute bottom-0 left-0 text-center bg-gray-800 w-3/5 mx-auto">
+            <h3 className="text-5xl break-words pl-0.5">
+              {video.title}
+            </h3>
+          </div>
+          <h4 className="text-3xl break-words pl-0.5">
+            {video.presenterDisplayName}
+          </h4>
+          {/* </div> */}
+        </article>
+        <h5>
+          {video.viewedCount < 10000 ? null : (
+            video.viewedCount < 1000000 ? (
+              `${Math.floor(video.viewedCount / 1000)}K views`
+            ) : (
+              `${(video.viewedCount / 1000000).toFixed(1)}M views`
+            )
+          )}
+        </h5>
       </div>
-    </article>
+
+    </div>
   );
 }
 
@@ -30,14 +131,7 @@ interface TalkListProps {
 }
 
 export function TalkList({ searchQuery, topicFilter }: TalkListProps) {
-  const {
-    data,
-    fetchNextPage,
-    hasNextPage,
-    isFetchingNextPage,
-    isLoading,
-    error
-  } = useVideos({
+  const { data, isLoading, error } = useVideos({
     searchQuery,
     topicFilter,
   });
@@ -53,34 +147,55 @@ export function TalkList({ searchQuery, topicFilter }: TalkListProps) {
 
   if (error) {
     return (
-      <div role="alert" className="error-state">
-        <h2>Error Loading Talks</h2>
-        <p>{error.message}</p>
+      <div
+        style={{
+          backgroundImage: `linear-gradient(rgba(255, 0, 0, 0.5), rgba(128, 128, 128, 0.5))`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          width: `100%`,
+          height: `100%`,
+          position: 'relative',
+        }}
+        className="flex"
+      >
+        <div className="flex">
+          <article className="flex w-full h-full relative bg-blue-500">
+            <div className="absolute bottom-0 left-0 text-center bg-gray-800 w-3/5 mx-auto">
+              <h3 className="text-5xl break-words pl-0.5">
+                TED2025
+              </h3>
+            </div>
+            <h4 className="text-3xl break-words pl-0.5">
+              Humanity Reimagined
+            </h4>
+          </article>
+        </div>
+  
       </div>
     );
   }
 
   return (
-    <div>
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+    <div className="container relative">
+      <Swiper
+        modules={[Autoplay, EffectFade]}
+        spaceBetween={0}
+        slidesPerView={'auto'}
+        autoplay={{
+          delay: 10000,
+          disableOnInteraction: true,
+        }}
+      >
         {data?.pages.map((page, i) => (
           <Fragment key={i}>
             {page.videos.edges.map(({ node }) => (
-              <TalkCard key={node.id} video={node} />
+              <SwiperSlide key={node.id}>
+                <TalkCard video={node} />
+              </SwiperSlide>
             ))}
           </Fragment>
         ))}
-      </div>
-
-      {hasNextPage && (
-        <button
-          onClick={() => fetchNextPage()}
-          disabled={isFetchingNextPage}
-          className="mt-4 px-4 py-2 bg-blue-500 text-white rounded disabled:opacity-50"
-        >
-          {isFetchingNextPage ? 'Loading more...' : 'Load more'}
-        </button>
-      )}
+      </Swiper>
     </div>
   );
 }

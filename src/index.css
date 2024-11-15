@@ -1,3 +1,7 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 :root {
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
@@ -11,8 +15,19 @@
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+::-webkit-scrollbar {
+  display: none;
 }
 
+.text-5xl {
+  font-size: 6rem;
+}
+.text-3xl {
+  font-size: 2.5rem;
+}
 a {
   font-weight: 500;
   color: #EB0028;
@@ -20,6 +35,13 @@ a {
 }
 a:hover {
   color: #EB0028;
+}
+
+#main-sponsor {
+  position: absolute;
+  bottom: 30px;
+  right: 90px;
+  z-index: 1;
 }
 
 body {
@@ -33,6 +55,27 @@ body {
 h1 {
   font-size: 3.2em;
   line-height: 1.1;
+}
+
+h3 {
+  margin:0;
+  padding-top: 60vh;
+  padding-left:5%;
+  padding-right:30%;
+  line-height: 120px;
+}
+
+h4 {
+  margin-top: 30px;
+  padding-left:5%;
+  padding-right:30%;
+}
+
+h5 {
+  margin-top: 30px;
+  padding-left:5%;
+  padding-right:30%;
+  font-size: 1.5em;
 }
 
 button {

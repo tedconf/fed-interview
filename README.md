@@ -1,5 +1,24 @@
 # TED Front-End Developer Interview Project
 
+
+JZ NOTES:
+
+1. use a custom hook to handle measuring displaySize and passing to children
+   (noticed from the api that multiple sizes are available, and project description mentions... undecided)
+	
+2. use a custom hook to handle selection of themes and search. -> move the themeSelector to this
+
+3. toggle themeSelector component via Keyboard? more time? use a socket or SSE?
+
+4. Nice carouselCards using Swiper? (because website uses it)
+
+5. image localStorage ... and potentially convert to string for space?
+
+6. failing gracefully -> nice placeholder
+
+7. focus on key areas and eval criteria
+
+
 A technical interview project that creates a browser for TED talks using TED's public GraphQL API.
 
 ## Getting Started
