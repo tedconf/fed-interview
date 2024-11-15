@@ -20,9 +20,6 @@ export default function App() {
   const [selectedTopic, setSelectedTopic] = useState('');
   const [showFilters, setShowFilters] = useState(false);
 
-  // Use the custom hook to get window size
-  // const { width, height } = useWindowSize();
-
   useEffect(() => {
     const handleKeyPress = (event: KeyboardEvent) => {
       if (
@@ -43,18 +40,7 @@ export default function App() {
     <QueryClientProvider client={queryClient}>
       <ErrorBoundary>
         <div className="">
-          {/* <header className="bg-white shadow">
-            <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-              <h1 className="text-3xl font-bold text-gray-900">
-                TED Talks
-              </h1>
-              <p className="text-sm text-gray-500">
-                Window size: {width} x {height}
-              </p>
-            </div>
-          </header> */}
-
-          <main className="">
+          <main className="flex">
             {showFilters && (
               <TalkFilters
                 onSearch={setSearchQuery}

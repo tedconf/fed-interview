@@ -94,34 +94,31 @@ function TalkCard({ video }: TalkCardProps) {
         backgroundPosition: 'center',
         width: `${width}px`,
         height: `${height}px`,
+        position: 'relative',
       }}
-      className="relative"
+      className="flex"
     >
-      {/* <article className="h-screen bottom-0 left-0 overflow-auto bg-white/80 backdrop-blur-sm">
-        <h3 style={{ marginTop: '0px' }} className="h-screen text-bottom">
-          {video.title}
-        </h3>
-        <p className="">{video.presenterDisplayName}</p>
-        <div className="">
-          {Math.floor(video.duration / 60)} minutes •{' '}
-          {new Intl.NumberFormat().format(video.viewedCount)} views
-        </div>
-      </article> */}
-
-      <article className="w-full h-full" style={{ height: "100%"}}>
-        <h3 style={{ marginTop: '0px', position: "absolute", bottom: "3em", left: "2em", fontSize: "5em"}} className="">
-          {video.title}
-        </h3>
-        <p style={{ marginTop: '0px', position: "absolute", bottom: "6em", left: "5em", fontSize: "2em"}}>{video.presenterDisplayName}</p>
-      </article>
-      <div style={{ position: "absolute", bottom: "7em", left: "6.5em", paddingLeft: "8px", fontSize: "1.5em"}}>
-        {video.viewedCount < 10000 ? null : (
-          video.viewedCount < 1000000 ? (
-            `${Math.floor(video.viewedCount / 1000)}K views`
-          ) : (
-            `${(video.viewedCount / 1000000).toFixed(1)}M views`
-          )
-        )}
+      <div className="flex">
+        <article className="flex w-full h-full relative bg-blue-500">
+          <div className="absolute bottom-0 left-0 text-center bg-gray-800 w-3/5 mx-auto">
+            <h3 className="text-5xl break-words pl-0.5">
+              {video.title}
+            </h3>
+          </div>
+          <h4 className="text-3xl break-words pl-0.5">
+            {video.presenterDisplayName}
+          </h4>
+          {/* </div> */}
+        </article>
+        <h5>
+          {video.viewedCount < 10000 ? null : (
+            video.viewedCount < 1000000 ? (
+              `${Math.floor(video.viewedCount / 1000)}K views`
+            ) : (
+              `${(video.viewedCount / 1000000).toFixed(1)}M views`
+            )
+          )}
+        </h5>
       </div>
 
     </div>
@@ -158,7 +155,7 @@ export function TalkList({ searchQuery, topicFilter }: TalkListProps) {
   }
 
   return (
-    <div>
+    <div className="container relative">
       <Swiper
         modules={[Autoplay, EffectFade]}
         spaceBetween={0}

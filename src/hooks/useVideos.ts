@@ -10,7 +10,7 @@ interface UseVideosOptions {
 }
 
 export function useVideos({
-  pageSize = 12,
+  pageSize = 30,
   searchQuery = '',
   topicFilter = ''
 }: UseVideosOptions = {}) {
@@ -23,6 +23,7 @@ export function useVideos({
         search: searchQuery || undefined,
         topic: topicFilter || undefined,
       });
+      console.log(response);
       return response;
     },
     getNextPageParam: (lastPage) =>
