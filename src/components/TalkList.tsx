@@ -89,7 +89,7 @@ function TalkCard({ video }: TalkCardProps) {
   return (
     <div
       style={{
-        backgroundImage: `url(${cachedImage || backgroundImage.url})`,
+        backgroundImage: `linear-gradient(rgba(255, 0, 0, 0.5), rgba(128, 128, 128, 0.5)), url(${cachedImage || backgroundImage.url})`,
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         width: `${width}px`,
@@ -161,7 +161,7 @@ export function TalkList({ searchQuery, topicFilter }: TalkListProps) {
         spaceBetween={0}
         slidesPerView={'auto'}
         autoplay={{
-          delay: 3000,
+          delay: 10000,
           disableOnInteraction: true,
         }}
       >

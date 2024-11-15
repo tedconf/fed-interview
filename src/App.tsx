@@ -2,7 +2,6 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useState, useEffect } from 'react';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { TalkFilters } from './components/TalkFilters';
-// import { useWindowSize } from './hooks/useWindowSize';
 import { TalkList } from './components/TalkList';
 
 const queryClient = new QueryClient({
@@ -39,7 +38,7 @@ export default function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <ErrorBoundary>
-        <div className="">
+        <div className="relative">
           <main className="flex">
             {showFilters && (
               <TalkFilters
@@ -53,6 +52,11 @@ export default function App() {
               topicFilter={selectedTopic}
             />
           </main>
+          <footer id="main-sponsor" className="absolute bottom-0 right-0 z-50 text-center">
+            <a href="https://www.ted.com">
+              <div>Main Sponsor</div>
+            </a>
+          </footer>
         </div>
       </ErrorBoundary>
     </QueryClientProvider>

@@ -33,6 +33,13 @@ a:hover {
   color: #EB0028;
 }
 
+#main-sponsor {
+  position: absolute;
+  bottom: 30px;
+  right: 90px;
+  z-index: 1;
+}
+
 body {
   margin: 0;
   display: flex;
